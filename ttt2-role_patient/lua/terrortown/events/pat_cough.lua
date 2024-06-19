@@ -21,6 +21,9 @@ end
 function makePlayerPatientSick(sickPlayer)
     print(tostring(sickPlayer) .. " BECAME SICK.")
     sickPlayer:SetNWBool("patient_poisoned", true)
+    if SERVER then
+        sickPlayer:GiveItem("item_pat_infection")
+    end
 end
 
 -- make the screen slightly yellow and blend some frames as a kind of "nausea" effect
@@ -61,6 +64,7 @@ function makePlayerPatientImmune(sickPlayer)
     print(tostring(sickPlayer) .. " BECAME IMMUNE.")
     sickPlayer:SetNWBool("patient_poisoned", false)
     if SERVER then
-        sickPlayer:GiveItem("item_pat_infection")
+        sickPlayer:GiveItem("item_pat_immunity")
+        sickPlayer:RemoveItem("item_pat_infection")
     end
 end
