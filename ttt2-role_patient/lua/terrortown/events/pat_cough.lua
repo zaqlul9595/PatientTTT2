@@ -1,3 +1,4 @@
+
 if CLIENT then
     hook.Add("Initialize", "ttt2_pat_init", function()
 		STATUS:RegisterStatus("ttt2_pat_infection_status", {
@@ -60,6 +61,6 @@ function makePlayerPatientImmune(sickPlayer)
     print(tostring(sickPlayer) .. " BECAME IMMUNE.")
     sickPlayer:SetNWBool("patient_poisoned", false)
     if SERVER then
-        sickPlayer:GiveItem("item_ttt_speedrun")
+        sickPlayer:GiveItem("item_pat_infection")
     end
 end
