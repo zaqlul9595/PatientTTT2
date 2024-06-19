@@ -4,7 +4,7 @@ if SERVER then
 end
 
 function ROLE:PreInitialize()
-  self.color = Color(60, 74, 35, 255)
+  self.color = Color(191, 214, 65, 255)
 
   self.abbr = "pat" -- abbreviation
   self.surviveBonus = 0 -- bonus multiplier for every survive while another player was killed
@@ -32,7 +32,13 @@ function ROLE:Initialize()
 end
 
 if SERVER then
+   -- Give Loadout on respawn and rolechange
 	function ROLE:GiveRoleLoadout(ply, isRoleChange)
 		ply:GiveEquipmentWeapon("ttt_patient_cough")
+	end
+
+	-- Remove Loadout on death and rolechange
+	function ROLE:RemoveRoleLoadout(ply, isRoleChange)
+		ply:StripWeapon("ttt_patient_cough")
 	end
 end

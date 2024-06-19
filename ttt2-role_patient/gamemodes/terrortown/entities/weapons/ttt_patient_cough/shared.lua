@@ -18,13 +18,17 @@ if CLIENT then
 
    SWEP.Icon                = "vgui/ttt/icon_pat"
    SWEP.IconLetter          = "j"
+
+   function SWEP:Initialize()
+		self:AddTTT2HUDHelp("Cough on other players to infect them. Eventually they will develop an immunity.")
+	end
 end
 
 SWEP.Base                   = "weapon_tttbase"
 
 SWEP.UseHands               = true
-SWEP.ViewModel              = "models/weapons/cstrike/c_knife_t.mdl"
-SWEP.WorldModel             = "models/weapons/w_knife_t.mdl"
+SWEP.ViewModel              = "models/weapons/c_arms.mdl"
+SWEP.WorldModel             = ""
 
 SWEP.Primary.Damage         = 0
 SWEP.Primary.ClipSize       = -1
@@ -69,26 +73,27 @@ function SWEP:PrimaryAttack()
 
    local hitEnt = tr.Entity
 
+   -- special cough sound and poison effect
+   self:GetOwner():EmitSound( "coof.wav")
+   local pdata = EffectData()
+   pdata:SetEntity(self:GetOwner())
+   local mouthOrigin = self:GetOwner():GetNetworkOrigin()
+   mouthOrigin:Add( Vector(0, 0, 70)) -- 70 is height of player head
+   pdata:SetOrigin(mouthOrigin)
+   util.Effect("AntlionGib", pdata)
+
    -- effects
    if IsValid(hitEnt) then
-      --self:SendWeaponAnim( ACT_VM_MISSCENTER )
-
-      local edata = EffectData()
-      edata:SetStart(spos)
-      edata:SetOrigin(tr.HitPos)
-      edata:SetNormal(tr.Normal)
-      edata:SetEntity(hitEnt)
       --if the entity he hit was a player
       if hitEnt:IsPlayer() then
-        --code for when a cough is successful goes here
+         --code for when a cough is successful goes here
+         STATUS:AddTimedStatus(hitEnt, "ttt2_pat_infection_status", 5, true)
+         makePlayerPatientSick(hitEnt)
+         timer.Create("ttt2_pat_infection_timer", 5, 1, function()
+            -- this is called when the timer runs out, player gains immunity.
+            makePlayerPatientImmune(hitEnt)
+         end)
       end
    end
-
-   if SERVER then
-      self:GetOwner():SetAnimation()
-   end
-   if SERVER and tr.Hit and tr.HitNonWorld and IsValid(hitEnt) then
-	   --coughing sound goes here
-	   end
-   end
    self:GetOwner():LagCompensation(false)
+end
