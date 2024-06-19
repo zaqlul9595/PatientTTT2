@@ -66,5 +66,6 @@ function makePlayerPatientImmune(sickPlayer)
     if SERVER then
         sickPlayer:GiveItem("item_pat_immunity")
         sickPlayer:RemoveItem("item_pat_infection")
+        sickPlayer:SetHealth(sickPlayer:GetMaxHealth())
     end
 end
