@@ -1,7 +1,7 @@
 if SERVER then
 	AddCSLuaFile()
 	resource.AddFile("materials/vgui/ttt/dynamic/roles/icon_pat.vmt")
-	
+	resource.AddFile( "materials/vgui/ttt/icons/lung_icon.png" )
 end
 
 function ROLE:PreInitialize()

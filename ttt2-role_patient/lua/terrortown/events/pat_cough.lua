@@ -16,7 +16,7 @@ if CLIENT then
 		})
 		
 		STATUS:RegisterStatus("ttt2_pat_cough_cooldown", {
-			hud = Material("vgui/ttt/dynamic/roles/icon_pat.vmt"),
+			hud = Material("vgui/ttt/icons/lung_icon.png"),
 			type = "bad",
 			name = "Cough Cooldown",
 			sidebarDescription = "You have coughed recently and it is on cooldown"
