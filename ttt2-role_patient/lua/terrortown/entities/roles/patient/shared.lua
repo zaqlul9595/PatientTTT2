@@ -63,7 +63,6 @@ if CLIENT then
       min = 5,
       max = 120,
       decimal = 0
-	
 	})
 	
 	form:MakeSlider({
@@ -72,7 +71,6 @@ if CLIENT then
       min = 5,
       max = 120,
       decimal = 0
-    
 	})
 	
   end

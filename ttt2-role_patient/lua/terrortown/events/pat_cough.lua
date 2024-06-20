@@ -8,7 +8,7 @@ if CLIENT then
 			sidebarDescription = "You have been infected by the Patient. You will gain immunity soon."
 		})
 
-        STATUS:RegisterStatus("ttt2_pat_infection_status", {
+        STATUS:RegisterStatus("ttt2_pat_immune_status", {
 			hud = Material("vgui/ttt/dynamic/roles/icon_pat.vmt"),
 			type = "good",
 			name = "Patient Immunity",
@@ -19,7 +19,7 @@ if CLIENT then
 			hud = Material("vgui/ttt/icons/lung_icon.png"),
 			type = "bad",
 			name = "Cough Cooldown",
-			sidebarDescription = "You have coughed recently and it is on cooldown"
+			sidebarDescription = "You have coughed recently and it is on cooldown."
 		})
 	end)
 end
@@ -36,6 +36,8 @@ function makePlayerPatientSick(sickPlayer)
 			local coughPitch = math.Rand(10,25)
 			local coughYaw = math.Rand(-10,10)
 			sickPlayer:ViewPunch(Angle( coughPitch, coughYaw, 0 ) )
+			-- update random delay so its more random
+			randDelay = math.Rand(5,15)
 		end)
     end
 end
@@ -83,6 +85,7 @@ function makePlayerPatientImmune(sickPlayer)
     if SERVER then
         sickPlayer:GiveItem("item_pat_immunity")
         sickPlayer:RemoveItem("item_pat_infection")
+		STATUS:AddStatus(sickPlayer, "ttt2_pat_immune_status")
 		if GetConVar("ttt2_get_full_health_on_immunity"):GetBool() then
 			sickPlayer:SetHealth(sickPlayer:GetMaxHealth())
 		end
