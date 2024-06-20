@@ -14,6 +14,13 @@ if CLIENT then
 			name = "Patient Immunity",
 			sidebarDescription = "You have gained immunity to the Patient's sickness. Enjoy the benefits!"
 		})
+		
+		STATUS:RegisterStatus("ttt2_pat_cough_cooldown", {
+			hud = Material("vgui/ttt/dynamic/roles/icon_pat.vmt"),
+			type = "bad",
+			name = "Cough Cooldown",
+			sidebarDescription = "You have coughed recently and it is on cooldown"
+		})
 	end)
 end
 
@@ -23,6 +30,13 @@ function makePlayerPatientSick(sickPlayer)
     sickPlayer:SetNWBool("patient_poisoned", true)
     if SERVER then
         sickPlayer:GiveItem("item_pat_infection")
+		local randDelay = math.Rand(5,15)
+		timer.Create("ttt2_sick_ply_cough", randDelay, 1000, function()
+			sickPlayer:EmitSound( "coof.wav")
+			local coughPitch = math.Rand(10,25)
+			local coughYaw = math.Rand(-10,10)
+			sickPlayer:ViewPunch(Angle( coughPitch, coughYaw, 0 ) )
+		end)
     end
 end
 
@@ -50,9 +64,11 @@ end
 -- remove any poison effects on player death or round start
 if SERVER then
     hook.Add("PostPlayerDeath", "patient_uninfection_effects_on_death", function(ply, infl, att)
-        ply:SetNWBool("patient_poisoned", false)
+        timer.Remove("ttt2_sick_ply_cough")
+		ply:SetNWBool("patient_poisoned", false)
     end)
     hook.Add("TTTPrepareRound", "patient_uninfection_effects_on_prepare", function()
+		timer.Remove("ttt2_sick_ply_cough")
         for i, j in pairs(player.GetAll()) do
             j:SetNWBool("patient_poisoned", false)
         end
@@ -62,6 +78,7 @@ end
 -- Function that gives immune traits to a player
 function makePlayerPatientImmune(sickPlayer)
     print(tostring(sickPlayer) .. " BECAME IMMUNE.")
+	timer.Remove("ttt2_sick_ply_cough")
     sickPlayer:SetNWBool("patient_poisoned", false)
     if SERVER then
         sickPlayer:GiveItem("item_pat_immunity")

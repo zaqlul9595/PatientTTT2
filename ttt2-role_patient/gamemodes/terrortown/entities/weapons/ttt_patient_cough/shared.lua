@@ -34,7 +34,7 @@ SWEP.Primary.Damage         = 0
 SWEP.Primary.ClipSize       = -1
 SWEP.Primary.DefaultClip    = -1
 SWEP.Primary.Automatic      = false
-SWEP.Primary.Delay          = 1
+SWEP.Primary.Delay          = 2
 SWEP.Primary.Ammo           = "none"
 
 SWEP.Kind                   = WEAPON_CLASS
@@ -51,9 +51,13 @@ function SWEP:OnDrop()
 end
 
 -- Override original primary attack
-function SWEP:PrimaryAttack()
-   self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
+function SWEP:PrimaryAttack()
+if not timer.Exists("ttt2_pat_timer_cooldown") then
+   self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+   local coughPitch = math.Rand(10,25)
+   local coughYaw = math.Rand(-10,10)
+   self:GetOwner():ViewPunch(Angle( coughPitch, coughYaw, 0 ) )
    if not IsValid(self:GetOwner()) then return end
 
    self:GetOwner():LagCompensation(true)
@@ -87,13 +91,18 @@ function SWEP:PrimaryAttack()
       --if the entity he hit was a player
       if hitEnt:IsPlayer() then
          --code for when a cough is successful goes here
+		   --start the cough cooldown
+		  STATUS:AddTimedStatus(self:GetOwner(), "ttt2_pat_cough_cooldown", 20 , true)
+		   timer.Create("ttt2_pat_timer_cooldown",20, 1, function()
+		   end)
          STATUS:AddTimedStatus(hitEnt, "ttt2_pat_infection_status", 5, true)
          makePlayerPatientSick(hitEnt)
-         timer.Create("ttt2_pat_infection_timer", 5, 1, function()
+         timer.Create("ttt2_pat_infection_timer", 20, 1, function()
             -- this is called when the timer runs out, player gains immunity.
             makePlayerPatientImmune(hitEnt)
          end)
       end
    end
    self:GetOwner():LagCompensation(false)
+   end
 end
