@@ -83,6 +83,8 @@ function makePlayerPatientImmune(sickPlayer)
     if SERVER then
         sickPlayer:GiveItem("item_pat_immunity")
         sickPlayer:RemoveItem("item_pat_infection")
-        sickPlayer:SetHealth(sickPlayer:GetMaxHealth())
+		if GetConVar("ttt2_get_full_health_on_immunity"):GetBool() then
+			sickPlayer:SetHealth(sickPlayer:GetMaxHealth())
+		end
     end
 end

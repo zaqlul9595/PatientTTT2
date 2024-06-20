@@ -43,3 +43,37 @@ if SERVER then
 		ply:StripWeapon("ttt_patient_cough")
 	end
 end
+
+CreateConVar("ttt2_pat_cough_cooldown_timer", 60, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+CreateConVar("ttt2_pat_sickness_timer", 60, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+CreateConVar("ttt2_get_full_health_on_immunity", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+
+if CLIENT then
+  function ROLE:AddToSettingsMenu(parent)
+    local form = vgui.CreateTTT2Form(parent, "header_roles_additional")
+	
+	 form:MakeCheckBox({
+      serverConvar = "ttt2_get_full_health_on_immunity",
+      label = "label_pat_get_full_health_on_immunity"
+    })
+	
+    form:MakeSlider({
+      serverConvar = "ttt2_pat_cough_cooldown_timer",
+      label = "label_pat_cough_cooldown_timer",
+      min = 5,
+      max = 120,
+      decimal = 0
+	
+	})
+	
+	form:MakeSlider({
+      serverConvar = "ttt2_pat_sickness_timer",
+      label = "label_pat_sickness_timer",
+      min = 5,
+      max = 120,
+      decimal = 0
+    
+	})
+	
+  end
+end

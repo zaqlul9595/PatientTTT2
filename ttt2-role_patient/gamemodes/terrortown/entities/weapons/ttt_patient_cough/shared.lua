@@ -92,12 +92,12 @@ if not timer.Exists("ttt2_pat_timer_cooldown") then
       if hitEnt:IsPlayer() then
          --code for when a cough is successful goes here
 		   --start the cough cooldown
-		  STATUS:AddTimedStatus(self:GetOwner(), "ttt2_pat_cough_cooldown", 20 , true)
-		   timer.Create("ttt2_pat_timer_cooldown",20, 1, function()
+		  STATUS:AddTimedStatus(self:GetOwner(), "ttt2_pat_cough_cooldown", GetConVar("ttt2_pat_cough_cooldown_timer"):GetInt() , true)
+		   timer.Create("ttt2_pat_timer_cooldown",GetConVar("ttt2_pat_cough_cooldown_timer"):GetInt(), 1, function()
 		   end)
-         STATUS:AddTimedStatus(hitEnt, "ttt2_pat_infection_status", 5, true)
+         STATUS:AddTimedStatus(hitEnt, "ttt2_pat_infection_status", GetConVar("ttt2_pat_sickness_timer"):GetInt(), true)
          makePlayerPatientSick(hitEnt)
-         timer.Create("ttt2_pat_infection_timer", 20, 1, function()
+         timer.Create("ttt2_pat_infection_timer", GetConVar("ttt2_pat_sickness_timer"):GetInt(), 1, function()
             -- this is called when the timer runs out, player gains immunity.
             makePlayerPatientImmune(hitEnt)
          end)
@@ -106,3 +106,13 @@ if not timer.Exists("ttt2_pat_timer_cooldown") then
    self:GetOwner():LagCompensation(false)
    end
 end
+
+--Remove timers when a round is started or ended
+hook.Add("TTTBeginRound", "remove_timers_on_prepare", function()
+	timer.Remove("ttt2_pat_timer_cooldown")
+	timer.Remove("ttt2_pat_infection_timer")
+end)
+hook.Add("TTTEndRound", "remove_timers_on_prepare", function()
+	timer.Remove("ttt2_pat_timer_cooldown")
+	timer.Remove("ttt2_pat_infection_timer")
+end)
