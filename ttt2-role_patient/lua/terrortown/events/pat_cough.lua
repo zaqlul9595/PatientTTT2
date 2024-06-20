@@ -26,7 +26,6 @@ end
 
 -- Function that gives sick traits to a player
 function makePlayerPatientSick(sickPlayer)
-    print(tostring(sickPlayer) .. " BECAME SICK.")
     sickPlayer:SetNWBool("patient_poisoned", true)
     if SERVER then
         sickPlayer:GiveItem("item_pat_infection")
@@ -79,7 +78,6 @@ end
 
 -- Function that gives immune traits to a player
 function makePlayerPatientImmune(sickPlayer)
-    print(tostring(sickPlayer) .. " BECAME IMMUNE.")
 	timer.Remove("ttt2_sick_ply_cough")
     sickPlayer:SetNWBool("patient_poisoned", false)
     if SERVER then
