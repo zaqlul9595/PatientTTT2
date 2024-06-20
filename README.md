@@ -8,5 +8,5 @@ Infect others by using your cough gadget and watch as they suffer from decreased
 As the patient, you choose whether to use your sickness to help, or hinder, the innocents. Or infect everyone you see!
 
 ### Immunity and its effects<br>
-Once the sickness for the player has ended, they receive a slight speed buff, and are fully healed!
+Once the sickness for the player has ended, they receive a slight speed buff, and get fully healed!
 This encourages the patient to understand the consequences of coughing on someone and to think twice about who you infect. They may come back stronger to haunt you!
