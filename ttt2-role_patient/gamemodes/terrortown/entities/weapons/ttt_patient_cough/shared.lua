@@ -13,7 +13,7 @@ if CLIENT then
 	
    SWEP.EquipMenuData = {
       type = "item_weapon",
-      desc = "Cough on other players to get them infected. Infected move slower, reduced vision, and an audible cough"
+      desc = "Cough on other players to get them infected. Infected move slower, reduced vision, and have an audible cough"
    };
 
    SWEP.Icon                = "vgui/ttt/icon_pat"
