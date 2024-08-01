@@ -1,4 +1,3 @@
-
 if CLIENT then
     hook.Add("Initialize", "ttt2_pat_init", function()
 		STATUS:RegisterStatus("ttt2_pat_infection_status", {
@@ -29,14 +28,14 @@ function makePlayerPatientSick(sickPlayer)
     sickPlayer:SetNWBool("patient_poisoned", true)
     if SERVER then
         sickPlayer:GiveItem("item_pat_infection")
-		local randDelay = math.Rand(5,15)
+		local randDelay = math.Rand(2,10)
 		timer.Create("ttt2_sick_ply_cough", randDelay, 1000, function()
 			sickPlayer:EmitSound( "coof.wav")
 			local coughPitch = math.Rand(10,25)
 			local coughYaw = math.Rand(-10,10)
 			sickPlayer:ViewPunch(Angle( coughPitch, coughYaw, 0 ) )
 			-- update random delay so its more random
-			randDelay = math.Rand(5,15)
+			randDelay = math.Rand(2,10)
 		end)
     end
 end

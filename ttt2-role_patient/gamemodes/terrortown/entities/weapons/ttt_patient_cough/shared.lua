@@ -53,7 +53,10 @@ end
 -- Override original primary attack
 
 function SWEP:PrimaryAttack()
-   if not timer.Exists("ttt2_pat_timer_cooldown") then
+   if timer.Exists("ttt2_pat_infection_timer") and SERVER then 
+	   LANG.Msg(self:GetOwner(), "You can only infect one player at a time!", nil, MSG_MSTACK_WARN)
+   end
+   if not timer.Exists("ttt2_pat_timer_cooldown") and not timer.Exists("ttt2_pat_infection_timer") then
       self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
       local coughPitch = math.Rand(10,25)
       local coughYaw = math.Rand(-10,10)
@@ -92,8 +95,9 @@ function SWEP:PrimaryAttack()
          if hitEnt:IsPlayer() then
             -- code for when a cough is successful goes here
             -- check if relevant player has immunity
-            if hitEnt:HasEquipmentItem("item_pat_immunity") then return end
-
+            if hitEnt:HasEquipmentItem("item_pat_immunity") then 
+				LANG.Msg(self:GetOwner(), "You have already infected that player!", nil, MSG_MSTACK_WARN)
+			return end
             --start the cough cooldown
             STATUS:AddTimedStatus(self:GetOwner(), "ttt2_pat_cough_cooldown", GetConVar("ttt2_pat_cough_cooldown_timer"):GetInt() , true)
             timer.Create("ttt2_pat_timer_cooldown",GetConVar("ttt2_pat_cough_cooldown_timer"):GetInt(), 1, function()
