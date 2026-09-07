@@ -34,7 +34,7 @@ SWEP.Primary.Damage         = 0
 SWEP.Primary.ClipSize       = -1
 SWEP.Primary.DefaultClip    = -1
 SWEP.Primary.Automatic      = false
-SWEP.Primary.Delay          = 2
+SWEP.Primary.Delay          = GetConVar("ttt2_pat_cough_cooldown_timer"):GetInt()
 SWEP.Primary.Ammo           = "none"
 
 SWEP.Kind                   = WEAPON_CLASS
@@ -86,45 +86,135 @@ if CLIENT then
     end)
 end
 
+
+-- Function that gives sick traits to a player
+function makePlayerPatientSick(sickPlayer)
+
+    sickPlayer:SetNWBool("patient_poisoned", true)
+    if SERVER then
+        sickPlayer:GiveItem("item_pat_infection") --give them the infection item that slows them down
+
+        --add to global values
+        --PATIENT_DATA:AddInfected(ply) --nil value error!
+
+        local timerName = "ttt2_sick_ply_cough" .. sickPlayer:SteamID64()
+
+        local function cough() --play cough procedure randomly, calls itself
+            if not IsValid(sickPlayer) then return end
+            if not sickPlayer:GetNWBool("patient_poisoned", false) then return end
+
+            sickPlayer:EmitSound("coof.wav")
+            local coughPitch = math.Rand(10, 25)
+            local coughYaw = math.Rand(-10, 10)
+            sickPlayer:ViewPunch(Angle(coughPitch, coughYaw, 0))
+
+            local newCoughInterval = math.Rand(2,10)
+            timer.Create(timerName, newCoughInterval, 1, cough)
+        end
+
+
+        --Begin the infection!
+        timer.Create(timerName, math.Rand(2, 10), 1, cough)
+        STATUS:AddTimedStatus(sickPlayer, "ttt2_pat_infection_status", GetConVar("ttt2_pat_sickness_timer"):GetInt(), true)
+        timer.Create("ttt2_pat_infection_timer" .. sickPlayer:SteamID64(), GetConVar("ttt2_pat_sickness_timer"):GetInt(), 1, function()
+            makePlayerPatientImmune(sickPlayer)
+        end)
+
+
+
+
+
+
+
+    end
+end
+
+-- Function that gives immune traits to a player
+function makePlayerPatientImmune(sickPlayer)
+    timer.Remove("ttt2_sick_ply_cough" .. sickPlayer:SteamID64())
+    sickPlayer:SetNWBool("patient_poisoned", false)
+
+    if SERVER then --replace infection items with immunity items
+        sickPlayer:GiveItem("item_pat_immunity")
+        sickPlayer:RemoveItem("item_pat_infection")
+        STATUS:AddStatus(sickPlayer, "ttt2_pat_immune_status")
+
+        if GetConVar("ttt2_get_full_health_on_immunity"):GetBool() then
+            sickPlayer:SetHealth(sickPlayer:GetMaxHealth())
+        end
+    end
+end
+
+
+
 --function that checks if players are in the infection sphere
-function checkIfPlyInSphere(patient)
+function checkIfPlyInSphere(patient, playersInfected)
+    --makePlayerPatientSick(patient) --make patient sick for testing
     local patPos = patient:GetPos()
     for _, ply in ipairs( player.GetAll() ) do
+
         --valid player checks
         if not ply:Alive() or ply:IsSpec() then return end
+        if ply:HasEquipmentItem("item_pat_immunity") then continue end
+
         --skip patient player
         if patient == ply then continue end
             --if in radius, infect!
             if ply:GetPos():Distance(patPos) <= 200 then
                 makePlayerPatientSick(ply)
-                print("Player: ",ply:Nick()," is in the radius!\nInfecting Player....")
-                --add to global values
-                --PATIENT_DATA:AddInfected(ply) TODO: FIX
-
+                table.insert(playersInfected, ply:Nick())
             end
+
     end
+
 end
 
 -- Override original primary attack
-
 function SWEP:PrimaryAttack()
+
+    local owner = self:GetOwner()
+    if not IsValid(owner) then return end
+
     self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+    STATUS:AddTimedStatus(owner, "ttt2_pat_cough_cooldown", GetConVar("ttt2_pat_cough_cooldown_timer"):GetInt() , true)
 
-    if not IsValid(self:GetOwner()) then return end
 
-    self:GetOwner():LagCompensation(true)
+
+    --Initialize table to track players infected this cough
+    local playersInfected = {}
+
+    owner:LagCompensation(true)
 
 
     --play cough sound
-    self:GetOwner():EmitSound("coof.wav")
+    owner:EmitSound("coof.wav")
 
     if SERVER then
         --Check if anyone is in the sphere
-        checkIfPlyInSphere(self:GetOwner())
+        checkIfPlyInSphere(owner, playersInfected)
     end
 
+    --init players infected as nobody
+    --concatenate table as a string of players
+    print(playersInfected)
+    local playersInfectedStr = "Nobody"
+
+    if #playersInfected > 0 then
+        playersInfectedStr = table.concat(playersInfected, "\n")
+    end
+
+    --display message of people infected
+    if SERVER then
+        EPOP:AddMessage(owner, {text = "Players Infected!", color = roles.PATIENT.color}, playersInfectedStr, 4, true)
+    end
+
+    owner:LagCompensation(false)
 
 end
+
+
+
+
 
 
 

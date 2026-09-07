@@ -2,7 +2,6 @@
 PATIENT_DATA = {}
 PATIENT_DATA.players_infected = 0
 PATIENT_DATA.players_needed_to_infect = 99
-PATIENT_DATA.infected_players = {}
 
 --networking incase values need to get updated
 if CLIENT then
@@ -17,36 +16,40 @@ end
 if SERVER then
     util.AddNetworkString("ttt2_role_patient_update")
 
-    hook.Add("TTTBeginRound","ttt_update_patient_data",function()
+    hook.Add("TTTBeginRound","PatientStartRound",function()
 
-    PATIENT_DATA.players_infected = 0
-    --Calculate how many players to infect to start pandemic
-    PATIENT_DATA.players_needed_to_infect = math.ceil(#util.GetActivePlayers() * 0.5)
+        PATIENT_DATA.players_infected = 0
+        --Calculate how many players to infect to start pandemic
+        PATIENT_DATA.players_needed_to_infect = math.ceil(#util.GetActivePlayers() * 0.5)
+        PATIENT_DATA.infected_players = {}
 
-    --Sends to client
-    net.Start("ttt2_role_patient_update")
-    net.WriteUInt(PATIENT_DATA.players_infected, 16)
-    net.WriteUInt(PATIENT_DATA.players_needed_to_infect, 16)
-    net.Broadcast()
+        --Sends to client
+        net.Start("ttt2_role_patient_update")
+        net.WriteUInt(PATIENT_DATA.players_infected, 16)
+        net.WriteUInt(PATIENT_DATA.players_needed_to_infect, 16)
+        net.Broadcast()
+
     end)
 
     -- reset hooks at round end AND start
-    hook.Add("TTTEndRound", "VultureEndRound", function()
+    hook.Add("TTTEndRound", "PatientEndRound", function()
         PATIENT_DATA.players_infected = 0
+        PATIENT_DATA.infected_players = {}
     end)
+
 end
 
 --add infected player
 function PATIENT_DATA:AddInfected(infected_ply)
 
     self.players_infected = self.players_infected + 1
-    table.insert(infected_players, infected_ply)
 
     --Sync to client
     net.Start("ttt2_role_patient_update")
     net.WriteUInt(PATIENT_DATA.players_infected, 16)
     net.WriteUInt(PATIENT_DATA.players_needed_to_infect, 16)
     net.Broadcast()
+
 
     checkStartPandemic()
 

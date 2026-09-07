@@ -44,7 +44,7 @@ if SERVER then
 	end
 end
 
-CreateConVar("ttt2_pat_cough_cooldown_timer", 60, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+CreateConVar("ttt2_pat_cough_cooldown_timer", 10, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 CreateConVar("ttt2_pat_sickness_timer", 60, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 CreateConVar("ttt2_get_full_health_on_immunity", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 
@@ -60,7 +60,7 @@ if CLIENT then
     form:MakeSlider({
       serverConvar = "ttt2_pat_cough_cooldown_timer",
       label = "label_pat_cough_cooldown_timer",
-      min = 5,
+      min = 1,
       max = 120,
       decimal = 0
 	})
