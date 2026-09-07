@@ -47,6 +47,9 @@ end
 CreateConVar("ttt2_pat_cough_cooldown_timer", 10, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 CreateConVar("ttt2_pat_sickness_timer", 60, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 CreateConVar("ttt2_get_full_health_on_immunity", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+CreateConVar("ttt2_pat_cough_dmg", 3, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+CreateConVar("ttt2_pat_wait_sickness_low", 10, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+CreateConVar("ttt2_pat_wait_sickness_high", 20, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 
 if CLIENT then
   function ROLE:AddToSettingsMenu(parent)
@@ -64,6 +67,14 @@ if CLIENT then
       max = 120,
       decimal = 0
 	})
+
+    form:MakeSlider({
+      serverConvar = "ttt2_pat_cough_dmg",
+      label = "label_pat_cough_dmg",
+      min = 0,
+      max = 100,
+      decimal = 0
+    })
 	
 	form:MakeSlider({
       serverConvar = "ttt2_pat_sickness_timer",
@@ -72,6 +83,26 @@ if CLIENT then
       max = 120,
       decimal = 0
 	})
+
+    form:MakeSlider({
+      serverConvar = "ttt2_pat_wait_sickness_low",
+      label = "label_pat_wait_sickness_low",
+      min = 0,
+      max = 120,
+      decimal = 0
+    })
+
+    form:MakeSlider({
+      serverConvar = "ttt2_pat_wait_sickness_high",
+      label = "label_pat_wait_sickness_high",
+      min = 0,
+      max = 120,
+      decimal = 0
+    })
+
+
+
+
 	
   end
 end

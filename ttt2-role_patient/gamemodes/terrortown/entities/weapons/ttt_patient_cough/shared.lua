@@ -88,14 +88,16 @@ end
 
 
 -- Function that gives sick traits to a player
-function makePlayerPatientSick(sickPlayer)
+function makePlayerPatientSick(sickPlayer, patient)
+
 
     sickPlayer:SetNWBool("patient_poisoned", true)
     if SERVER then
+
         sickPlayer:GiveItem("item_pat_infection") --give them the infection item that slows them down
 
         --add to global values
-        --PATIENT_DATA:AddInfected(ply) --nil value error!
+        --PATIENT_DATA:AddInfected(sickPlayer) --nil value error!
 
         local timerName = "ttt2_sick_ply_cough" .. sickPlayer:SteamID64()
 
@@ -108,8 +110,22 @@ function makePlayerPatientSick(sickPlayer)
             local coughYaw = math.Rand(-10, 10)
             sickPlayer:ViewPunch(Angle(coughPitch, coughYaw, 0))
 
+
+            --create damage info for the sick player
+            local dmg = DamageInfo()
+            dmg:SetDamage(GetConVar("ttt2_pat_cough_dmg"):GetInt())
+            dmg:SetAttacker(patient)
+            dmg:SetInflictor(patient)
+            dmg:SetDamageForce(patient:GetAimVector() * 3)
+            dmg:SetDamagePosition(patient:GetPos())
+            dmg:SetDamageType(DMG_DISSOLVE)
+
+
+            --deal damage to sick player
+            sickPlayer:TakeDamageInfo( dmg )
+
             local newCoughInterval = math.Rand(2,10)
-            timer.Create(timerName, newCoughInterval, 1, cough)
+            timer.Create(timerName, newCoughInterval, 1, cough) --get a new cough timer
         end
 
 
@@ -119,11 +135,6 @@ function makePlayerPatientSick(sickPlayer)
         timer.Create("ttt2_pat_infection_timer" .. sickPlayer:SteamID64(), GetConVar("ttt2_pat_sickness_timer"):GetInt(), 1, function()
             makePlayerPatientImmune(sickPlayer)
         end)
-
-
-
-
-
 
 
     end
@@ -143,26 +154,37 @@ function makePlayerPatientImmune(sickPlayer)
             sickPlayer:SetHealth(sickPlayer:GetMaxHealth())
         end
     end
+
 end
 
 
 
 --function that checks if players are in the infection sphere
 function checkIfPlyInSphere(patient, playersInfected)
-    --makePlayerPatientSick(patient) --make patient sick for testing
+    --makePlayerPatientSick(patient, patient) --make patient sick for testing
+
     local patPos = patient:GetPos()
     for _, ply in ipairs( player.GetAll() ) do
 
         --valid player checks
         if not ply:Alive() or ply:IsSpec() then return end
-        if ply:HasEquipmentItem("item_pat_immunity") then continue end
+        if ply:HasEquipmentItem("item_pat_immunity") then continue end--make sure they havent become immune
+        if ply:HasEquipmentItem("item_pat_infection") then continue end --skip ply if they are already currently infected
 
         --skip patient player
         if patient == ply then continue end
             --if in radius, infect!
             if ply:GetPos():Distance(patPos) <= 200 then
-                makePlayerPatientSick(ply)
-                table.insert(playersInfected, ply:Nick())
+
+                table.insert(playersInfected, ply:Nick()) --add player to infected players this cough
+
+                timer.Create("ttt2_wait_sickness" .. ply:SteamID64(), math.Rand(GetConVar("ttt2_pat_wait_sickness_low"):GetInt(),GetConVar("ttt2_pat_wait_sickness_high"):GetInt()), 1, function() --wait until the infection kicks in
+
+                    if not IsValid(ply) then return end --are they still a valid ply?
+                    if ply:HasEquipmentItem("item_pat_immunity") then return end
+                    if ply:HasEquipmentItem("item_pat_infection") then return end
+                    makePlayerPatientSick(ply,patient) --infect player here
+                end)
             end
 
     end

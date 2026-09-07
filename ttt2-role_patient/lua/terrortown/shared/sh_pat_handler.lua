@@ -1,3 +1,5 @@
+AddCSLuaFile()
+
 --global variables to track players infected
 PATIENT_DATA = {}
 PATIENT_DATA.players_infected = 0

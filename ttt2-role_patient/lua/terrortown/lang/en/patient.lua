@@ -18,3 +18,6 @@ L["item_patient_infection_desc"] = "Your immune system is compromised, resulting
 L["label_pat_cough_cooldown_timer"] = "How long until the patient can cough again: "
 L["label_pat_sickness_timer"] = "How long a player is sick for: "
 L["label_pat_get_full_health_on_immunity"] = "Sick player gets full health on immunity: "
+L["label_pat_cough_dmg"] = "How much damage you take each cough: "
+L["label_pat_wait_sickness_low"] = "The shortest time you could wait until getting infected: "
+L["label_pat_wait_sickness_high"] = "The longest time you could wait until getting infected: "

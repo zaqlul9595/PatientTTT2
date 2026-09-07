@@ -57,6 +57,9 @@ end
 if SERVER then
 	hook.Add("PostPlayerDeath", "patient_uninfection_effects_on_death", function(ply, infl, att)
 		clearPatEffects(ply)
+		timer.Remove("ttt2_sick_ply_cough" .. ply:SteamID64())
+		timer.Remove("ttt2_pat_infection_timer" .. ply:SteamID64())
+		timer.Remove("ttt2_wait_sickness" .. ply:SteamID64())
 	end)
 end
 
@@ -66,18 +69,27 @@ if SERVER then
 	hook.Add("TTTPrepareRound","patient_remove_effects_prepare", function()
 		for i, j in pairs(player.GetAll()) do
 			clearPatEffects(j)
+			timer.Remove("ttt2_sick_ply_cough" .. j:SteamID64())
+			timer.Remove("ttt2_pat_infection_timer" .. j:SteamID64())
+			timer.Remove("ttt2_wait_sickness" .. j:SteamID64())
 		end
 	end)
 
 	hook.Add("TTTBeginRound", "patient_remove_effects_begin", function()
 		for i, j in pairs(player.GetAll()) do
 			clearPatEffects(j)
+			timer.Remove("ttt2_sick_ply_cough" .. j:SteamID64())
+			timer.Remove("ttt2_pat_infection_timer" .. j:SteamID64())
+			timer.Remove("ttt2_wait_sickness" .. j:SteamID64())
 		end
 	end)
 
 	hook.Add("TTTEndRound", "patient_remove_effects_end", function()
 		for i, j in pairs(player.GetAll()) do
 			clearPatEffects(j)
+			timer.Remove("ttt2_sick_ply_cough" .. j:SteamID64())
+			timer.Remove("ttt2_pat_infection_timer" .. j:SteamID64())
+			timer.Remove("ttt2_wait_sickness" .. j:SteamID64())
 		end
 	end)
 end
